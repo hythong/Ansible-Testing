@@ -1,0 +1,30 @@
+---
+- name: Get Device Facts
+  hosts: all
+  connection: local
+  gather_facts: no
+  vars:
+    credential:
+      hosts: "{{ ansible_ssh_host }}"
+      port: "{{ netconf_port }}"
+      usrname: "{{ ansible_ssh_user }}"
+      password: "{{ ansible_ssh_pass }}"
+
+  tasks:
+  - name: Checking NETCONF Connectivity
+    wait_for: host={{ ansible_ssh_host }} port={{ netconf_port }}
+
+
+  - name: Retrieve info from dev running Junos OS
+    junos_facts:
+      host: "{{ ansible_ssh_host}}"
+      provider: "{{ credential }}"
+      config: no
+    register: junos
+
+# register: junos  <<<  is a memory block reserved for the information to be used later. 
+
+  - name: Show ver
+    debug: msg="Router {{ inventory_hostname }} is running {{ version }}"
+
+  - name:
